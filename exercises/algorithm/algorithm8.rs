@@ -51,12 +51,12 @@ impl<T> Default for Queue<T> {
     }
 }
 
-pub struct myStack<T>
+pub struct MyStack<T>
 {
 	q1:Queue<T>,
 	q2:Queue<T>
 }
-impl<T> myStack<T> {
+impl<T> MyStack<T> {
     pub fn new() -> Self {
         Self {
 			q1:Queue::<T>::new(),
@@ -71,12 +71,12 @@ impl<T> myStack<T> {
 			return Err("Stack is empty");
 		}
 		while self.q1.size() > 1 {
-			let v = self.q1.dequeue().unwrap();
+			let v = self.q1.dequeue().map_err(|_| "Stack is empty")?;
 			self.q2.enqueue(v);
 		}
-		let result = self.q1.dequeue();
+		let value = self.q1.dequeue().map_err(|_| "Stack is empty")?;
 		std::mem::swap(&mut self.q1, &mut self.q2);
-		result
+		Ok(value)
     }
     pub fn is_empty(&self) -> bool {
 		self.q1.is_empty()
@@ -89,7 +89,7 @@ mod tests {
 	
 	#[test]
 	fn test_queue(){
-		let mut s = myStack::<i32>::new();
+		let mut s = MyStack::<i32>::new();
 		assert_eq!(s.pop(), Err("Stack is empty"));
         s.push(1);
         s.push(2);
